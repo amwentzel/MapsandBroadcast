@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "29188594701",
+    "firebase_url": "https://mapsandbroadcast-b9b6d.firebaseio.com",
+    "project_id": "mapsandbroadcast-b9b6d",
+    "storage_bucket": "mapsandbroadcast-b9b6d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29188594701:android:ae39f27a7c401173",
+        "android_client_info": {
+          "package_name": "mc.sweng888.psu.edu.newmapsexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "29188594701-8bubmjupdosf24gbstqptcdhr7uvrklr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_LTIJwf9rXCsNbsawkd5SXQGtW0Ur8EE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
