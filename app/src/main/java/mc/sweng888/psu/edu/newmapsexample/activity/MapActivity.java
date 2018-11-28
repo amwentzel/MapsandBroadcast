@@ -53,7 +53,6 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         // Instantiating a new IntentFilter to support BroadcastReceivers
         intentFilter = new IntentFilter("mc.sweng888.psu.edu.newmapsexample.action.NEW_MAP_LOCATION_BROADCAST");
         broadcastReceiverMap = new BroadcastReceiverMap();
-
     }
 
     @Override
@@ -68,9 +67,6 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         // Unregister the Broadcast Receiver
         unregisterReceiver(broadcastReceiverMap);
         super.onStop();
-
-
-
     }
 
     // Step 1 - Set up initial configuration for the map.
@@ -234,7 +230,6 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
     }
 
     private ArrayList<MapLocation> loadData(){
-
         // FIXME Method should create/return a new Collection with all MapLocation available on firebase.
 
         ArrayList<MapLocation> mapLocations = new ArrayList<>();
