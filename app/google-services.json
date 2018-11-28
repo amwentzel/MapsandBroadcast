@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "29188594701-0tdqpf3v5pniscqso2f04gefg3ikuhju.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "mc.sweng888.psu.edu.newmapsexample",
+            "certificate_hash": "041532116b5beab5459fde04928187f0a79a4506"
+          }
+        },
+        {
           "client_id": "29188594701-8bubmjupdosf24gbstqptcdhr7uvrklr.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "29188594701-8bubmjupdosf24gbstqptcdhr7uvrklr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

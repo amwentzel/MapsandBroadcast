@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -15,6 +16,12 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -177,6 +184,53 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
     public void createMarkersFromFirebase(GoogleMap googleMap){
         // FIXME Call loadData() to gather all MapLocation instances from firebase.
         // FIXME Call createCustomMapMarkers for each MapLocation in the Collection
+        firebaseLoadData(googleMap);
+    }
+
+    private void firebaseLoadData(GoogleMap googleMap) {
+        final ArrayList<MapLocation> mapLocations = new ArrayList<>();
+        DatabaseReference databaseReference =  FirebaseDatabase.getInstance().getReference();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot locationSnapshot : dataSnapshot.getChildren()){
+                    String location = locationSnapshot.child("location").getValue(String.class);
+                    Double lattitude = locationSnapshot.child("lattitude").getValue(Double.class);
+                    Double longitude = locationSnapshot.child("longitude").getValue(Double.class);
+                    Log.d("FirebaseLoadData", "location: " + location + " lattitude: " +
+                            lattitude + " longitude: " + longitude);
+
+                    mapLocations.add(new MapLocation(location, "unknown", lattitude.toString(), longitude.toString()));
+
+
+                }
+                createMarkersFromFirebase(mapLocations);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void createMarkersFromFirebase(ArrayList<MapLocation> locations) {
+        for (MapLocation location : locations) {
+            LatLng newLocation = new LatLng(Double.parseDouble(location.getLatitude()),
+                    Double.parseDouble(location.getLongitude()));
+
+            triggerBroadcastMessageFromFirebase(newLocation, location.getTitle());
+        }
+    }
+
+    private void triggerBroadcastMessageFromFirebase(LatLng latlng, String location){
+        Intent explicitIntent = new Intent(this, BroadcastReceiverMap.class);
+        explicitIntent.putExtra("Latitude", latlng.latitude);
+        explicitIntent.putExtra("Longitude", latlng.longitude);
+        explicitIntent.putExtra("Location", location);
+
+        sendBroadcast(explicitIntent);
     }
 
     private ArrayList<MapLocation> loadData(){
