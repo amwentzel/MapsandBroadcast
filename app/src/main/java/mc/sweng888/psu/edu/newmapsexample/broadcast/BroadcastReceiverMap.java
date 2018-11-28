@@ -42,13 +42,11 @@ public class BroadcastReceiverMap extends BroadcastReceiver {
         // to the Equator.
         String hemisphere = getHemisphere(latitude);
 
-
         if (hemisphere.equals("NORTH") || hemisphere.equals("SOUTH") || hemisphere.equals("SOUTH")){
 
             // Create an instance of the NotificationManager
             // It call the static function from(Context) to get a NotificationManagerCompat object, and then call
             // one of its methods to post or cancel notifications
-
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             // If you are using the Android API above then 26, you should use another constructor.
@@ -71,11 +69,9 @@ public class BroadcastReceiverMap extends BroadcastReceiver {
 
         }else
             Log.d(MAP_TAG, String.valueOf(R.string.location_out));
-
     }
 
     private NotificationChannel getNotificationChannel(){
-
         NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_NAME, CHANNEL_DESCRIPTION, CHANNEL_IMPORTANCE);
         notificationChannel.setDescription(CHANNEL_DESCRIPTION);
         notificationChannel.enableLights(true);
@@ -87,7 +83,6 @@ public class BroadcastReceiverMap extends BroadcastReceiver {
     }
 
     private String getHemisphere(Double latitude){
-
         String hemisphere = "";
         boolean isCentralHemisphere = (latitude < 23 && latitude > -23);
         boolean isNorthHemisphere = (latitude > 23 && latitude <= 90);
@@ -102,7 +97,6 @@ public class BroadcastReceiverMap extends BroadcastReceiver {
                     hemisphere = "SOUTH";
             }
         }
-
         return hemisphere;
     }
 }
