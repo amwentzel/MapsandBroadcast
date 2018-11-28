@@ -1,10 +1,10 @@
 package mc.sweng888.psu.edu.newmapsexample.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -29,7 +29,7 @@ import mc.sweng888.psu.edu.newmapsexample.R;
 import mc.sweng888.psu.edu.newmapsexample.broadcast.BroadcastReceiverMap;
 import mc.sweng888.psu.edu.newmapsexample.model.MapLocation;
 
-public class MapActivity extends Activity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private final String LOG_MAP = "GOOGLE_MAPS";
 
@@ -41,6 +41,8 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
     // Broadcast Receiver
     private IntentFilter intentFilter = null;
     private BroadcastReceiverMap broadcastReceiverMap = null;
+
+    private ArrayList<MapLocation> mapLocations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +80,7 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         Double longitude = intent.getDoubleExtra("LONGITUDE", Double.NaN);
         String location = intent.getStringExtra("LOCATION");
 
-        // Set initial positionning (Latitude / longitude)
+        // Set initial positioning (Latitude / longitude)
         currentLatLng = new LatLng(latitude, longitude);
 
         googleMap.addMarker(new MarkerOptions()
@@ -90,6 +92,7 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         mapCameraConfiguration(googleMap);
         useMapClickListener(googleMap);
         useMarkerClickListener(googleMap);
+        createMarkersFromFirebase(googleMap);
     }
 
     /** Step 2 - Set a few properties for the map when it is ready to be displayed.
@@ -102,7 +105,7 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(currentLatLng)
-                .zoom(14)
+                .zoom(5)
                 .bearing(0)
                 .build();
 
@@ -124,15 +127,16 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
 
     /** Step 3 - Reusable code
      This method is called everytime the use wants to place a new marker on the map. **/
-    private void createCustomMapMarkers(GoogleMap googleMap, LatLng latlng, String title, String snippet){
+    private void createCustomMapMarkers(GoogleMap googleMap, LatLng latlng, String location, String snippet){
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latlng) // coordinates
-                .title(title) // location name
+                .title(location) // location name
                 .snippet(snippet); // location description
 
         // Update the global variable (currentMapMarker)
         currentMapMarker = googleMap.addMarker(markerOptions);
+        triggerBroadcastMessageFromFirebase(latlng, location);
     }
 
     // Step 4 - Define a new marker based on a Map click (uses onMapClickListener)
@@ -171,7 +175,6 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 Log.i(LOG_MAP, "setOnMarkerClickListener");
-
                 return false;
             }
         });
@@ -181,10 +184,20 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         // FIXME Call loadData() to gather all MapLocation instances from firebase.
         // FIXME Call createCustomMapMarkers for each MapLocation in the Collection
         firebaseLoadData(googleMap);
+        for(MapLocation location : mapLocations) {
+            double latitude = Double.parseDouble(location.getLatitude());
+            double longitude = Double.parseDouble(location.getLongitude());
+            LatLng latLng = new LatLng(latitude, longitude);
+            createCustomMapMarkers(googleMap, latLng,
+                    "New Marker",
+                    "Listener onMapClick - new position"
+                            +"lat: "+latLng.latitude
+                            +" lng: "+ latLng.longitude);
+        }
     }
 
     private void firebaseLoadData(GoogleMap googleMap) {
-        final ArrayList<MapLocation> mapLocations = new ArrayList<>();
+        mapLocations = new ArrayList<>();
         DatabaseReference databaseReference =  FirebaseDatabase.getInstance().getReference();
         databaseReference.addValueEventListener(new ValueEventListener() {
 
@@ -192,12 +205,12 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot locationSnapshot : dataSnapshot.getChildren()){
                     String location = locationSnapshot.child("location").getValue(String.class);
-                    Double lattitude = locationSnapshot.child("lattitude").getValue(Double.class);
+                    Double latitude = locationSnapshot.child("latitude").getValue(Double.class);
                     Double longitude = locationSnapshot.child("longitude").getValue(Double.class);
-                    Log.d("FirebaseLoadData", "location: " + location + " lattitude: " +
-                            lattitude + " longitude: " + longitude);
+                    Log.d("FirebaseLoadData", "location: " + location + " latitude: " +
+                            latitude + " longitude: " + longitude);
 
-                    mapLocations.add(new MapLocation(location, "unknown", lattitude.toString(), longitude.toString()));
+                    mapLocations.add(new MapLocation(location, "unknown", latitude.toString(), longitude.toString()));
 
 
                 }
