@@ -205,7 +205,7 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
 
 
                 }
-                createMarkersFromFirebase(mapLocations);
+                createMarkersFromFirebaseLocations(mapLocations);
             }
 
             @Override
@@ -215,7 +215,7 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         });
     }
 
-    private void createMarkersFromFirebase(ArrayList<MapLocation> locations) {
+    private void createMarkersFromFirebaseLocations(ArrayList<MapLocation> locations) {
         for (MapLocation location : locations) {
             LatLng newLocation = new LatLng(Double.parseDouble(location.getLatitude()),
                     Double.parseDouble(location.getLongitude()));
