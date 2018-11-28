@@ -74,12 +74,12 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
 
         Intent intent = getIntent();
-        Double latiude = intent.getDoubleExtra("LATITUDE", Double.NaN);
+        Double latitude = intent.getDoubleExtra("LATITUDE", Double.NaN);
         Double longitude = intent.getDoubleExtra("LONGITUDE", Double.NaN);
         String location = intent.getStringExtra("LOCATION");
 
         // Set initial positionning (Latitude / longitude)
-        currentLatLng = new LatLng(latiude, longitude);
+        currentLatLng = new LatLng(latitude, longitude);
 
         googleMap.addMarker(new MarkerOptions()
                 .position(currentLatLng)
