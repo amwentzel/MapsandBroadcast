@@ -211,10 +211,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             latitude + " longitude: " + longitude);
 
                     mapLocations.add(new MapLocation(location, "unknown", latitude.toString(), longitude.toString()));
-
-
                 }
-                createMarkersFromFirebaseLocations(mapLocations);
             }
 
             @Override
@@ -222,15 +219,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             }
         });
-    }
-
-    private void createMarkersFromFirebaseLocations(ArrayList<MapLocation> locations) {
-        for (MapLocation location : locations) {
-            LatLng newLocation = new LatLng(Double.parseDouble(location.getLatitude()),
-                    Double.parseDouble(location.getLongitude()));
-
-            triggerBroadcastMessageFromFirebase(newLocation, location.getTitle());
-        }
     }
 
     private void triggerBroadcastMessageFromFirebase(LatLng latlng, String location){
