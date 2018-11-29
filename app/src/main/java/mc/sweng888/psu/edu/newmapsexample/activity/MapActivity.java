@@ -43,6 +43,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private BroadcastReceiverMap broadcastReceiverMap = null;
 
     private ArrayList<MapLocation> mapLocations;
+    private FirebaseDatabase firebaseDatabase = null;
+    private DatabaseReference databaseReference = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +55,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         // Instantiating a new IntentFilter to support BroadcastReceivers
-        intentFilter = new IntentFilter("mc.sweng888.psu.edu.newmapsexample.action.NEW_MAP_LOCATION_BROADCAST");
+        intentFilter = new IntentFilter(BroadcastReceiverMap.NEW_MAP_LOCATION_BROADCAST);
         broadcastReceiverMap = new BroadcastReceiverMap();
     }
 
@@ -74,7 +76,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     // Step 1 - Set up initial configuration for the map.
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         Intent intent = getIntent();
         Double latitude = intent.getDoubleExtra("LATITUDE", Double.NaN);
         Double longitude = intent.getDoubleExtra("LONGITUDE", Double.NaN);
@@ -92,6 +93,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapCameraConfiguration(googleMap);
         useMapClickListener(googleMap);
         useMarkerClickListener(googleMap);
+        firebaseLoadData(googleMap);
         createMarkersFromFirebase(googleMap);
     }
 
@@ -196,21 +198,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void firebaseLoadData(GoogleMap googleMap) {
+    private void firebaseLoadData(final GoogleMap googleMap) {
         mapLocations = new ArrayList<>();
-        DatabaseReference databaseReference =  FirebaseDatabase.getInstance().getReference();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getInstance().getReference();
+
         databaseReference.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot locationSnapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot locationSnapshot : dataSnapshot.getChildren()) {
                     String location = locationSnapshot.child("location").getValue(String.class);
                     Double latitude = locationSnapshot.child("latitude").getValue(Double.class);
                     Double longitude = locationSnapshot.child("longitude").getValue(Double.class);
                     Log.d("FirebaseLoadData", "location: " + location + " latitude: " +
                             latitude + " longitude: " + longitude);
 
-                    mapLocations.add(new MapLocation(location, "unknown", latitude.toString(), longitude.toString()));
+                    MapLocation mapLocation = new MapLocation(location, "unknown", latitude.toString(), longitude.toString());
+                    mapLocations.add(mapLocation);
+                    LatLng latLng = new LatLng(latitude, longitude);
+                    createCustomMapMarkers(googleMap, latLng, location, "");
                 }
             }
 
